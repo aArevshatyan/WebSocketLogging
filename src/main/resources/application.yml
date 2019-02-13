@@ -1,2 +1,6 @@
 server:
   port: 8080
+  session:
+    cookie:
+      name: valodik
+      http-only: false

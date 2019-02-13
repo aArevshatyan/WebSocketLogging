@@ -1,18 +1,21 @@
-let $loading = $('#loading');
-
 let socket = new SockJS('/ws');
 let stompClient = Stomp.over(socket);
 
-stompClient.connect({}, function (frame) {
-    stompClient.subscribe('/message', function (data) {
-        let message = data.body;
-
-        let $li = $('<li/>');
-        let $div = $('<div/>')
-            .append(message);
-
-        $loading.append($li.append($div));
+function init(sessionId) {
+    stompClient.connect({}, function (frame) {
+        stompClient.subscribe('/message/' + sessionId, function (data) {
+            if (data.body === 'done') {
+                $('#btnMigrate').prop('disabled', false);
+            } else {
+                $('#percent').text(data.body + '%');
+            }
+        });
     });
-});
+}
 
-
+function migrate() {
+    $('#btnMigrate').prop('disabled', true);
+    $.ajax('/migrate', {
+        method: 'POST'
+    });
+}
